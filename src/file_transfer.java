@@ -8,19 +8,21 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import it.sauronsoftware.ftp4j.FTPDataTransferListener;
+import java.lang.Thread;
 
 /**
  * Created by bbuckland on 3/18/15.
  */
 public class file_transfer implements ActionListener {
     private JPanel mainContainer;
-    private JProgressBar progressBar1;
+    private JProgressBar progressBar;
     private JPanel activityStatus;
     private JLabel activity;
     private JButton uploadButton;
     private JButton downloadButton;
     private JButton deleteButton;
     private JTree ftpTree;
+    private int transferredBytes;
     static boolean stillRunning;
     static String username, server, port, password;
     FTPClient client;
@@ -34,16 +36,21 @@ public class file_transfer implements ActionListener {
         public void started() {
             // Transfer started
             activity.setText("Transfer Started");
+            progressBar.setValue(0);
+            transferredBytes=0;
         }
 
         public void transferred(int length) {
             // Yet other length bytes has been transferred since the last time this
             // method was called
+            transferredBytes+=length;
+            progressBar.setValue(transferredBytes);
             activity.setText("Length:  " + length);
         }
 
         public void completed() {
             // Transfer completed
+            progressBar.setValue(100);
             activity.setText("Transfer Complete");
         }
 
@@ -218,6 +225,12 @@ public class file_transfer implements ActionListener {
 
     }
 
+   /* public static void updateProgressBar() {
+        while(true != false) {
+            progressBar.setValue(progressBar.getValue());
+        }
+    }*/
+
    @Override
     public void actionPerformed(ActionEvent e) {
        /*
@@ -244,6 +257,10 @@ public class file_transfer implements ActionListener {
         username = args[2];
         password = args[3];
 
+        Thread progressBarUpdater = new Thread(() -> {
+            //updateProgressBar();
+        });
+
         JFrame frame = new JFrame("file_transfer");
         frame.setContentPane(new file_transfer().mainContainer);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -251,7 +268,7 @@ public class file_transfer implements ActionListener {
         frame.setLocationRelativeTo(null); //Center it on the screen
         frame.setVisible(true);
         while(stillRunning!=true) {
-            //doThings();
+
             //System.out.println("Press Any Key To Continue...");
         }
         System.out.println("Press Any Key To Continue...");
