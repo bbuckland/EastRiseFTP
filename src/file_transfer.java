@@ -9,6 +9,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import it.sauronsoftware.ftp4j.FTPDataTransferListener;
 import java.lang.Thread;
+import java.util.Arrays;
 
 /**
  * Created by bbuckland on 3/18/15.
@@ -28,8 +29,8 @@ public class file_transfer implements ActionListener {
     FTPClient client;
     private DefaultMutableTreeNode rootNode;
     DefaultTreeModel model;
-    TreePath currentFTPNode;
     private File curDir = new File(".");
+    final JFileChooser fc = new JFileChooser();
 
     public class MyTransferListener implements FTPDataTransferListener {
 
@@ -67,19 +68,9 @@ public class file_transfer implements ActionListener {
 
     }
 
-    MouseListener ml = new MouseAdapter() {
-        public void mousePressed(MouseEvent e) {
-            int selRow = ftpTree.getRowForLocation(e.getX(), e.getY());
-            TreePath selPath = ftpTree.getPathForLocation(e.getX(), e.getY());
-            if(selRow != -1) {
-                System.out.println(selPath);
-                currentFTPNode = selPath;
-            }
-        }
-    };
+
 
     public file_transfer() {
-        ftpTree.addMouseListener(ml);
         client = new FTPClient();
         while (!client.isAuthenticated()) {
 
@@ -92,10 +83,9 @@ public class file_transfer implements ActionListener {
                     activity.setText("Connected!");
                 }
                 //updateFilePanes(); //Updates the file listing with the files from the ftpRadioButton server now that it is connected.
-                rootNode = new DefaultMutableTreeNode("Root node");
 
                 model = (DefaultTreeModel) ftpTree.getModel();
-                rootNode = new DefaultMutableTreeNode("root", true);
+                rootNode = new DefaultMutableTreeNode("/", true);
                 model.setRoot(rootNode);
 
                 buildFTPTree(rootNode);
@@ -114,6 +104,15 @@ public class file_transfer implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 //Download file here.
                 //downloadFile(fileNameText.getText(), e);
+                String filepath = "";
+                String localfile = "";
+                Object[] hello = ftpTree.getSelectionPath().getPath();
+                for (int i = 1; i < hello.length; i++) {
+                    filepath += "/" + hello[i];
+                    localfile =  (String)hello[i];
+                }
+                downloadFile(filepath,localfile,e);
+                System.out.println("Downloading file from server: " + filepath);
             }
         });
 
@@ -124,6 +123,16 @@ public class file_transfer implements ActionListener {
             public void actionPerformed(ActionEvent e) {//Specific listener call
                 //Upload file here.
                 //uploadFile(fileNameText.getText(), e);
+                int returnVal = fc.showOpenDialog(fc);
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    //This is where a real application would open the file.
+                    uploadFile(file, e);
+                    System.out.println("Opening: " + file.getName() + ".");
+                } else {
+                    System.out.println("Open command cancelled by user.");
+                }
             }
         });
 
@@ -139,10 +148,10 @@ public class file_transfer implements ActionListener {
     }
 
 
-    private void uploadFile(String fileName, ActionEvent e)
+    private void uploadFile(File file, ActionEvent e)
     {
         try {
-            client.upload(new java.io.File(fileName), new MyTransferListener());
+            client.upload(file, new MyTransferListener());
         } catch (IOException e1) {
             e1.printStackTrace();
         } catch (FTPIllegalReplyException e1) {
@@ -156,12 +165,12 @@ public class file_transfer implements ActionListener {
         }
     }
 
-    private void downloadFile(String fileName, ActionEvent e)
+    private void downloadFile(String ftpLocation, String localName, ActionEvent e)
     {
         try {
-            File downloadFile = new File(new java.io.File(".").getCanonicalPath() + '\\' + fileName);
+            File downloadFile = new File(new java.io.File(".").getCanonicalPath() + '\\' + localName);
             downloadFile.createNewFile();
-            client.download(fileName, new java.io.File(fileName));
+            client.download(ftpLocation, new java.io.File(localName));
         } catch (IOException e1) {
             e1.printStackTrace();
         } catch (FTPIllegalReplyException e1) {
