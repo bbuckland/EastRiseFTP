@@ -1,6 +1,8 @@
 import it.sauronsoftware.ftp4j.*;
 
 import javax.swing.*;
+import javax.swing.tree.*;
+import javax.swing.JTree.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -26,9 +28,13 @@ public class file_transfer implements ActionListener {
     private JTextPane computerFilePane;
     private JRadioButton computerRadioButton;
     private JRadioButton ftpRadioButton;
+    private JTree ftpTree;
     static boolean stillRunning;
     static String username, server, port, password;
     FTPClient client;
+    private DefaultMutableTreeNode rootNode;
+    DefaultTreeModel model;
+    TreePath currentFTPNode;
     private File curDir = new File(".");
 
     public class MyTransferListener implements FTPDataTransferListener {
@@ -62,8 +68,19 @@ public class file_transfer implements ActionListener {
 
     }
 
+    MouseListener ml = new MouseAdapter() {
+        public void mousePressed(MouseEvent e) {
+            int selRow = ftpTree.getRowForLocation(e.getX(), e.getY());
+            TreePath selPath = ftpTree.getPathForLocation(e.getX(), e.getY());
+            if(selRow != -1) {
+                System.out.println(selPath);
+                currentFTPNode = selPath;
+            }
+        }
+    };
 
     public file_transfer() {
+        ftpTree.addMouseListener(ml);
         client = new FTPClient();
         while (!client.isAuthenticated()) {
 
@@ -75,7 +92,14 @@ public class file_transfer implements ActionListener {
                 if (client.isAuthenticated()) {
                     activity.setText("Connected!");
                 }
-                updateFilePanes(); //Updates the file listing with the files from the ftpRadioButton server now that it is connected.
+                //updateFilePanes(); //Updates the file listing with the files from the ftpRadioButton server now that it is connected.
+                rootNode = new DefaultMutableTreeNode("Root node");
+
+                model = (DefaultTreeModel) ftpTree.getModel();
+                rootNode = new DefaultMutableTreeNode("root", true);
+                model.setRoot(rootNode);
+
+                buildFTPTree(rootNode);
             } catch (IOException e1) {
                 e1.printStackTrace();
             } catch (FTPIllegalReplyException e1) {
@@ -289,6 +313,42 @@ public class file_transfer implements ActionListener {
             } catch (FTPListParseException e1) {
                 e1.printStackTrace();
             }
+    }
+    private void refreshFTPTree () {
+        rootNode.removeAllChildren();
+        buildFTPTree(rootNode);
+        model.reload(rootNode);
+    }
+
+    private void buildFTPTree(DefaultMutableTreeNode node) {
+        DefaultMutableTreeNode child;
+        try {
+            FTPFile[] list = client.list();
+
+            for (FTPFile file : list) {
+                child = new DefaultMutableTreeNode( file.getName());
+                node.add(child);
+                if (file.getType() == 1) { //is directory
+                    client.changeDirectory(file.getName());
+                    buildFTPTree(child);
+                    client.changeDirectoryUp();
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (FTPIllegalReplyException e) {
+            e.printStackTrace();
+        } catch (FTPException e) {
+            e.printStackTrace();
+        } catch (FTPDataTransferException e) {
+            e.printStackTrace();
+        } catch (FTPAbortedException e) {
+            e.printStackTrace();
+        } catch (FTPListParseException e) {
+            e.printStackTrace();
+        }
+
     }
 
    @Override
