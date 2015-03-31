@@ -22,6 +22,7 @@ public class file_transfer implements ActionListener {
     private JButton uploadButton;
     private JButton downloadButton;
     private JButton deleteButton;
+    private JButton ftpPermissions;
     private JTree ftpTree;
     private int transferredBytes;
     static boolean stillRunning;
@@ -108,10 +109,10 @@ public class file_transfer implements ActionListener {
                 String localfile = "";
                 Object[] hello = ftpTree.getSelectionPath().getPath();
                 for (int i = 1; i < hello.length; i++) {
-                   // if (i != 1)
-                        filepath += "/" + hello[i];
+                    // if (i != 1)
+                    filepath += "/" + hello[i];
                     //else
-                        //filepath += hello[i];
+                    //filepath += hello[i];
                     localfile =  hello[i].toString();
                 }
                 downloadFile(filepath,localfile,e);
@@ -144,22 +145,35 @@ public class file_transfer implements ActionListener {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String filepath = "";
-                Object[] hello = ftpTree.getSelectionPath().getPath();
-                for (int i = 1; i < hello.length; i++) {
-                    // if (i != 1)
-                    filepath += "/" + hello[i];
-                    //else
-                    //filepath += hello[i];
-                }
-                deleteFile(filepath, e);
+
+                deleteFile(getPath(), e);
 
                 refreshFTPTree();
             }
         });
 
+        ftpPermissions.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                file_permissions.main(client, getPath());
+            }
+        });
     }
 
+    private String getPath() {
+
+        String filepath = "";
+        Object[] hello = ftpTree.getSelectionPath().getPath();
+        for (int i = 1; i < hello.length; i++) {
+            // if (i != 1)
+            filepath += "/" + hello[i];
+            //else
+            //filepath += hello[i];
+        }
+        return filepath;
+
+    }
 
     private void uploadFile(File file, ActionEvent e)
     {
@@ -217,6 +231,18 @@ public class file_transfer implements ActionListener {
         buildFTPTree(rootNode);
         model.reload(rootNode);
     }
+
+    /*private String getFtpPath() {
+        String filepath = "";
+        Object[] hello = ftpTree.getSelectionPath().getPath();
+        for (int i = 1; i < hello.length; i++) {
+            // if (i != 1)
+            filepath += "/" + hello[i];
+            //else
+            //filepath += hello[i];
+        }
+        return filepath;
+    }*/
 
     private void buildFTPTree(DefaultMutableTreeNode node) {
         DefaultMutableTreeNode child;
