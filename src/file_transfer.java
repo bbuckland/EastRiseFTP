@@ -44,8 +44,8 @@ public class file_transfer implements ActionListener {
         public void transferred(int length) {
             // Yet other length bytes has been transferred since the last time this
             // method was called
-            transferredBytes+=length;
-            progressBar.setValue(transferredBytes);
+            //transferredBytes+=length;
+            //progressBar.setValue(transferredBytes);
             activity.setText("Length:  " + length);
         }
 
@@ -108,8 +108,11 @@ public class file_transfer implements ActionListener {
                 String localfile = "";
                 Object[] hello = ftpTree.getSelectionPath().getPath();
                 for (int i = 1; i < hello.length; i++) {
-                    filepath += "/" + hello[i];
-                    localfile =  (String)hello[i];
+                   // if (i != 1)
+                        filepath += "/" + hello[i];
+                    //else
+                        //filepath += hello[i];
+                    localfile =  hello[i].toString();
                 }
                 downloadFile(filepath,localfile,e);
                 System.out.println("Downloading file from server: " + filepath);
@@ -129,6 +132,7 @@ public class file_transfer implements ActionListener {
                     File file = fc.getSelectedFile();
                     //This is where a real application would open the file.
                     uploadFile(file, e);
+                    refreshFTPTree();
                     System.out.println("Opening: " + file.getName() + ".");
                 } else {
                     System.out.println("Open command cancelled by user.");
@@ -140,8 +144,17 @@ public class file_transfer implements ActionListener {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String filepath = "";
+                Object[] hello = ftpTree.getSelectionPath().getPath();
+                for (int i = 1; i < hello.length; i++) {
+                    // if (i != 1)
+                    filepath += "/" + hello[i];
+                    //else
+                    //filepath += hello[i];
+                }
+                deleteFile(filepath, e);
 
-                //deleteFile(fileNameText.getText(), e);
+                refreshFTPTree();
             }
         });
 
@@ -150,6 +163,8 @@ public class file_transfer implements ActionListener {
 
     private void uploadFile(File file, ActionEvent e)
     {
+        progressBar.setValue(1);
+        progressBar.repaint(0); //Repaints the progress bar value.
         try {
             client.upload(file, new MyTransferListener());
         } catch (IOException e1) {
