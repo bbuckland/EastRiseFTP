@@ -32,7 +32,7 @@ public class file_permissions extends JDialog {
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onOK();
+                onSubmit();
             }
         });
 
@@ -58,9 +58,9 @@ public class file_permissions extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onOK() {
-
+    private void onSubmit() {
         setPerms();
+
         dispose();
     }
 
@@ -70,36 +70,44 @@ public class file_permissions extends JDialog {
 
     private void setChecks() {
         // Sets check marks on dialog to current permissions
+
     }
 
     private void setPerms() {
         // Sets permissions based on check marks
-        int oPerm = 0;
-        int gPerm = 0;
-        int aPerm = 0;
+        int oPerm = 0;  // Owner permissions
+        int gPerm = 0;  // Group permissions
+        int aPerm = 0;  // All (other) permissions
 
-        if (ownerRead.isSelected()) oPerm += 4;
-        if (ownerWrite.isSelected()) oPerm += 2;
-        if (ownerExe.isSelected()) oPerm += 1;
-        if (groupRead.isSelected()) gPerm += 4;
-        if (groupWrite.isSelected()) gPerm += 2;
-        if (groupExe.isSelected()) gPerm += 1;
-        if (allRead.isSelected()) aPerm += 4;
-        if (allWrite.isSelected()) aPerm += 2;
-        if (allExe.isSelected()) aPerm += 1;
+        // Set owner permissions digit
+        if (ownerRead.isSelected()) oPerm += 4;     // Read
+        if (ownerWrite.isSelected()) oPerm += 2;    // Write
+        if (ownerExe.isSelected()) oPerm += 1;      // Execute
 
+        // Set group permissions digit
+        if (groupRead.isSelected()) gPerm += 4;     // Read
+        if (groupWrite.isSelected()) gPerm += 2;    // Write
+        if (groupExe.isSelected()) gPerm += 1;      // Execute
+
+        // Set all permissions digit
+        if (allRead.isSelected()) aPerm += 4;       // Read
+        if (allWrite.isSelected()) aPerm += 2;      // Write
+        if (allExe.isSelected()) aPerm += 1;        // Execute
+
+        // Concatenate digits into chmod code
         String perms = Integer.toString(oPerm) + Integer.toString(gPerm) + Integer.toString(aPerm);
-        System.out.println(perms);
+        //System.out.println(perms); // just for testing
 
-        FTPReply lsReply = null;
+        FTPReply chmodReply = null;
         try {
-            lsReply = client.sendSiteCommand("chmod " + perms + " " + theFile);
+            // Set file permissions
+            chmodReply = client.sendSiteCommand("chmod " + perms + " " + theFile);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (FTPIllegalReplyException e) {
             e.printStackTrace();
         }
-        System.out.println(lsReply.toString());
+        System.out.println(chmodReply.toString());
     }
 
     public static void main(FTPClient inClient, String inFile) {
