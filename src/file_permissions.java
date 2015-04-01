@@ -28,21 +28,12 @@ public class file_permissions extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        setChecks();
+        setChecks();    // Sets up check boxes with current permissions
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onSubmit();
-            }
-        });
+        buttonOK.addActionListener(e -> onSubmit());
+        buttonCancel.addActionListener(e -> onCancel());
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
-
-// call onCancel() when cross is clicked
+        // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -50,12 +41,8 @@ public class file_permissions extends JDialog {
             }
         });
 
-// call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        // call onCancel() on ESCAPE
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void onSubmit() {
@@ -70,7 +57,35 @@ public class file_permissions extends JDialog {
 
     private void setChecks() {
         // Sets check marks on dialog to current permissions
+        try {
+            // Get status of theFile
+            FTPReply statReply = client.sendCustomCommand("STAT " + theFile);
+            String[] messages = statReply.getMessages();
 
+            // Get permissions from messages
+            char[] perms = new char[9];
+            messages[1].getChars(2,11,perms,0);
+
+            // Set owner permission check boxes
+            if (perms[0] == 'r') ownerRead.setSelected(true);
+            if (perms[1] == 'w') ownerWrite.setSelected(true);
+            if (perms[2] == 'x') ownerExe.setSelected(true);
+
+            // Set group permission check boxes
+            if (perms[3] == 'r') groupRead.setSelected(true);
+            if (perms[4] == 'w') groupWrite.setSelected(true);
+            if (perms[5] == 'x') groupExe.setSelected(true);
+
+            // Set all permission check boxes
+            if (perms[6] == 'r') allRead.setSelected(true);
+            if (perms[7] == 'w') allWrite.setSelected(true);
+            if (perms[8] == 'x') allExe.setSelected(true);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (FTPIllegalReplyException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setPerms() {
@@ -98,16 +113,15 @@ public class file_permissions extends JDialog {
         String perms = Integer.toString(oPerm) + Integer.toString(gPerm) + Integer.toString(aPerm);
         //System.out.println(perms); // just for testing
 
-        FTPReply chmodReply = null;
+        FTPReply chmodReply;
         try {
             // Set file permissions
             chmodReply = client.sendSiteCommand("chmod " + perms + " " + theFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (FTPIllegalReplyException e) {
+            System.out.println(chmodReply.toString());
+        }
+        catch (FTPIllegalReplyException | IOException e) {
             e.printStackTrace();
         }
-        System.out.println(chmodReply.toString());
     }
 
     public static void main(FTPClient inClient, String inFile) {

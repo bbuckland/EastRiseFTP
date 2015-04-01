@@ -156,20 +156,21 @@ public class file_transfer implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                file_permissions.main(client, getPath());
+                String filepath = getPath();
+
+                // If a file is selected, bring up permissions dialog
+                if (filepath != "") file_permissions.main(client, filepath);
             }
         });
     }
 
     private String getPath() {
+        // Gets file path from currently selected node
 
         String filepath = "";
         Object[] hello = ftpTree.getSelectionPath().getPath();
         for (int i = 1; i < hello.length; i++) {
-            // if (i != 1)
             filepath += "/" + hello[i];
-            //else
-            //filepath += hello[i];
         }
         return filepath;
 
@@ -231,18 +232,6 @@ public class file_transfer implements ActionListener {
         buildFTPTree(rootNode);
         model.reload(rootNode);
     }
-
-    /*private String getFtpPath() {
-        String filepath = "";
-        Object[] hello = ftpTree.getSelectionPath().getPath();
-        for (int i = 1; i < hello.length; i++) {
-            // if (i != 1)
-            filepath += "/" + hello[i];
-            //else
-            //filepath += hello[i];
-        }
-        return filepath;
-    }*/
 
     private void buildFTPTree(DefaultMutableTreeNode node) {
         DefaultMutableTreeNode child;
