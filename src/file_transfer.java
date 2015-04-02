@@ -25,7 +25,7 @@ public class file_transfer implements ActionListener {
     private JButton ftpPermissions;
     private JTree ftpTree;
     private int transferredBytes;
-    static boolean stillRunning;
+    static boolean stillRunning, needsDownloadAnimation;
     static String username, server, port, password;
     FTPClient client;
     private DefaultMutableTreeNode rootNode;
@@ -53,7 +53,7 @@ public class file_transfer implements ActionListener {
         public void completed() {
             // Transfer completed
             progressBar.setValue(100);
-            activity.setText("Transfer Complete");
+            activity.setText("Upload Complete");
         }
 
         public void aborted() {
@@ -117,6 +117,9 @@ public class file_transfer implements ActionListener {
                 }
                 downloadFile(filepath,localfile,e);
                 System.out.println("Downloading file from server: " + filepath);
+                progressBar.setValue(100); //If this action completes, the progress bar's value is set.
+                //needsDownloadAnimation = true;
+                activity.setText("Download Complete");
             }
         });
 
@@ -128,7 +131,6 @@ public class file_transfer implements ActionListener {
                 //Upload file here.
                 //uploadFile(fileNameText.getText(), e);
                 int returnVal = fc.showOpenDialog(fc);
-
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
                     //This is where a real application would open the file.
@@ -147,7 +149,7 @@ public class file_transfer implements ActionListener {
             public void actionPerformed(ActionEvent e) {
 
                 deleteFile(getPath(), e);
-
+                activity.setText("File Deleted");
                 refreshFTPTree();
             }
         });
@@ -160,6 +162,15 @@ public class file_transfer implements ActionListener {
 
                 // If a file is selected, bring up permissions dialog
                 if (filepath != "") file_permissions.main(client, filepath);
+            }
+        });
+
+        ftpTree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                progressBar.setValue(0);
+                activity.setText("Ready");
             }
         });
     }
@@ -178,8 +189,6 @@ public class file_transfer implements ActionListener {
 
     private void uploadFile(File file, ActionEvent e)
     {
-        progressBar.setValue(1);
-        progressBar.repaint(0); //Repaints the progress bar value.
         try {
             client.upload(file, new MyTransferListener());
         } catch (IOException e1) {
@@ -290,15 +299,24 @@ public class file_transfer implements ActionListener {
         }*/
     }
 
+    /*public void checkDownloadAnimation(){
+        if(needsDownloadAnimation == true) {
+            needsDownloadAnimation = false;
+            for (int i = 0; i < 100; i++)
+            progressBar.setValue(i);
+        }
+    }
+    Thread progressBarUpdater = new Thread(() -> {
+        checkDownloadAnimation();
+    });
+*/
     public static void main(String[] args) {
         server = args[0];
         port = args[1];
         username = args[2];
         password = args[3];
 
-        Thread progressBarUpdater = new Thread(() -> {
-            //updateProgressBar();
-        });
+
 
         JFrame frame = new JFrame("file_transfer");
         frame.setContentPane(new file_transfer().mainContainer);
@@ -306,10 +324,7 @@ public class file_transfer implements ActionListener {
         frame.pack();
         frame.setLocationRelativeTo(null); //Center it on the screen
         frame.setVisible(true);
-        while(stillRunning!=true) {
 
-            //System.out.println("Press Any Key To Continue...");
-        }
         System.out.println("Press Any Key To Continue...");
         new java.util.Scanner(System.in).nextLine();
     }
