@@ -3,6 +3,7 @@ import it.sauronsoftware.ftp4j.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.JTree.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -87,6 +88,7 @@ public class file_transfer implements ActionListener {
                 }
                 //updateFilePanes(); //Updates the file listing with the files from the ftpRadioButton server now that it is connected.
 
+                //ftpTree.setCellRenderer(new MyTreeCellRenderer());
                 model = (DefaultTreeModel) ftpTree.getModel();
                 rootNode = new DefaultMutableTreeNode("/", true);
                 model.setRoot(rootNode);
@@ -190,16 +192,18 @@ public class file_transfer implements ActionListener {
                 String dirName = JOptionPane.showInputDialog(null,
                         "Name of new directory:",
                         "Enter name of directory",
-                        JOptionPane.QUESTION_MESSAGE);
-                try {
-                    client.createDirectory(filepath + "/" + dirName);
-                    refreshFTPTree();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                } catch (FTPIllegalReplyException e1) {
-                    e1.printStackTrace();
-                } catch (FTPException e1) {
-                    e1.printStackTrace();
+                        JOptionPane.PLAIN_MESSAGE);
+                if (dirName != null) {
+                    try {
+                        client.createDirectory(filepath + "/" + dirName);
+                        refreshFTPTree();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    } catch (FTPIllegalReplyException e1) {
+                        e1.printStackTrace();
+                    } catch (FTPException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
         });
@@ -357,6 +361,34 @@ public class file_transfer implements ActionListener {
         checkDownloadAnimation();
     });
 */
+
+    /*private static class MyTreeCellRenderer extends DefaultTreeCellRenderer {
+
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+
+            // decide what icons you want by examining the node
+            if (value instanceof DefaultMutableTreeNode) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+                if (node.getUserObject() instanceof FTPFile) {
+                    // your root node, since you just put a String as a user obj
+                    //setIcon(UIManager.getIcon("FileView.computerIcon"));
+                    FTPFile theFile = (FTPFile) node.getUserObject();
+                    if (theFile.getType() == theFile.TYPE_DIRECTORY) {
+                        setIcon(UIManager.getIcon("FileChooser.directoryIcon"));
+                    } else {
+                        setIcon(UIManager.getIcon("FileChooser.directoryIcon"));
+                    }
+                } else {
+                    setIcon(UIManager.getIcon("FileChooser.directoryIcon"));
+                }
+            }
+            return this;
+        }
+
+    }*/
+
     public static void main(String[] args) {
         server = args[0];
         port = args[1];
