@@ -201,7 +201,7 @@ public class file_transfer implements ActionListener {
         });
 
 
-        newDirButton.addActionListener(new ActionListener() {
+        newDirButton.addActionListener(new ActionListener() { //Creates new directory in the directory that is CURRENTLY SELECTED.
             @Override
             public void actionPerformed(ActionEvent e) {
                 String filepath = getPath();
@@ -236,7 +236,6 @@ public class file_transfer implements ActionListener {
 
     private String getPath() {
         // Gets file path from currently selected node
-
         String filepath = "";
         Object[] hello = ftpTree.getSelectionPath().getPath();
         for (int i = 1; i < hello.length; i++) {
@@ -302,13 +301,6 @@ public class file_transfer implements ActionListener {
             e1.printStackTrace();
             return false;
         }
-/*        } catch (FTPDataTransferException e1) {
-            e1.printStackTrace();
-        } catch (FTPAbortedException e1) {
-            e1.printStackTrace();
-        } catch (FTPListParseException e1) {
-            e1.printStackTrace();
-        }*/
     return true;
     }
 
@@ -459,8 +451,6 @@ public class file_transfer implements ActionListener {
         port = args[1];
         username = args[2];
         password = args[3];
-
-
 
         JFrame frame = new JFrame("file_transfer");
         frame.setContentPane(new file_transfer().mainContainer);
