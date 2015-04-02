@@ -104,7 +104,7 @@ public class file_transfer implements ActionListener {
                 }
                 //updateFilePanes(); //Updates the file listing with the files from the ftpRadioButton server now that it is connected.
 
-                //ftpTree.setCellRenderer(new MyTreeCellRenderer());
+                ftpTree.setCellRenderer(new MyTreeCellRenderer());
                 model = (DefaultTreeModel) ftpTree.getModel();
                 rootNode = new DefaultMutableTreeNode("/", true);
                 model.setRoot(rootNode);
@@ -324,7 +324,11 @@ public class file_transfer implements ActionListener {
             FTPFile[] list = client.list();
 
             for (FTPFile file : list) {
-                child = new DefaultMutableTreeNode( file.getName());
+
+                // Checks if file is a folder and stores a SimpleFile object in node, so no need to have a ton of FTPFiles
+                if (file.getType() == 1) child = new DefaultMutableTreeNode( new SimpleFile(file.getName(), true) );
+                else child = new DefaultMutableTreeNode( new SimpleFile(file.getName(), false) );
+
                 node.add(child);
                 if (file.getType() == 1) { //is directory
                     client.changeDirectory(file.getName());
@@ -387,7 +391,7 @@ public class file_transfer implements ActionListener {
     });
 */
 
-    /*private static class MyTreeCellRenderer extends DefaultTreeCellRenderer {
+    private static class MyTreeCellRenderer extends DefaultTreeCellRenderer {
 
         @Override
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
@@ -396,23 +400,59 @@ public class file_transfer implements ActionListener {
             // decide what icons you want by examining the node
             if (value instanceof DefaultMutableTreeNode) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-                if (node.getUserObject() instanceof FTPFile) {
-                    // your root node, since you just put a String as a user obj
-                    //setIcon(UIManager.getIcon("FileView.computerIcon"));
-                    FTPFile theFile = (FTPFile) node.getUserObject();
-                    if (theFile.getType() == theFile.TYPE_DIRECTORY) {
-                        setIcon(UIManager.getIcon("FileChooser.directoryIcon"));
-                    } else {
-                        setIcon(UIManager.getIcon("FileChooser.directoryIcon"));
-                    }
-                } else {
-                    setIcon(UIManager.getIcon("FileChooser.directoryIcon"));
+
+                // If node is a file
+                if (node.getUserObject() instanceof SimpleFile) {
+                    SimpleFile theFile = (SimpleFile) node.getUserObject();
+
+                    // If that file is a folder, set to directoryIcon
+                    if (theFile.isFolder()) setIcon(UIManager.getIcon("FileChooser.directoryIcon"));
+                        // If any  other type of file, set to fileIcon
+                    else setIcon(UIManager.getIcon("FileChooser.fileIcon"));
                 }
+
+                // If node is root (userobject set to string with value of "/"), set to directoryIcon
+                else if (node.getUserObject() instanceof String) {
+                    String thestring = (String) node.getUserObject();
+                    if (thestring == "/") setIcon(UIManager.getIcon("FileChooser.directoryIcon"));
+                }
+
+                // Set default to fileIcon
+                else setIcon(UIManager.getIcon("FileChooser.fileIcon"));
             }
             return this;
         }
 
-    }*/
+    }
+
+    private static class SimpleFile {
+
+        private boolean isfolder;
+        private String name;
+
+        public SimpleFile(String name) {
+            this(name, false);
+        }
+
+        public SimpleFile(String name, boolean property) {
+            this.isfolder = property;
+            this.name = name;
+        }
+
+        public boolean isFolder() {
+            return isfolder;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+
+    }
 
     public static void main(String[] args) {
         server = args[0];
