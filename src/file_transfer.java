@@ -73,7 +73,7 @@ public class file_transfer implements ActionListener {
 
 
 
-        public file_transfer() {
+    public file_transfer() {
         client = new FTPClient();
         while (!client.isAuthenticated()) {
 
