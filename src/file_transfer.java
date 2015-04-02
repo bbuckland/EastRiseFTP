@@ -148,8 +148,9 @@ public class file_transfer implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                deleteFile(getPath(), e);
-                activity.setText("File Deleted");
+                if(deleteFile(getPath(), e)) {
+                    activity.setText("Deleted");
+                }
                 refreshFTPTree();
             }
         });
@@ -223,17 +224,36 @@ public class file_transfer implements ActionListener {
         }
     }
 
-    private void deleteFile(String fileName, ActionEvent e)
+    private boolean deleteFile(String fileName, ActionEvent e)
     {
         try {
-            client.deleteFile(fileName);
+            //activity.setText(Character.toString(fileName.indexOf(1)));
+            if(fileName.indexOf('.') != fileName.length()-4 && fileName.indexOf('.') != fileName.length()-5) //If there is no extension.
+            {
+                //Directory Delete
+               client.deleteDirectory(fileName);
+            }
+            else {
+                //Client Delete
+                client.deleteFile(fileName);
+            }
         } catch (IOException e1) {
             e1.printStackTrace();
         } catch (FTPIllegalReplyException e1) {
             e1.printStackTrace();
         } catch (FTPException e1) {
+            activity.setText("Error: Directory not empty");
             e1.printStackTrace();
+            return false;
         }
+/*        } catch (FTPDataTransferException e1) {
+            e1.printStackTrace();
+        } catch (FTPAbortedException e1) {
+            e1.printStackTrace();
+        } catch (FTPListParseException e1) {
+            e1.printStackTrace();
+        }*/
+    return true;
     }
 
     private void refreshFTPTree () {
