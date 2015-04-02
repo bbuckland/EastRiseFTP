@@ -32,6 +32,7 @@ public class file_transfer implements ActionListener {
     private File curDir = new File(".");
     final JFileChooser fc = new JFileChooser();
 
+
     public class MyTransferListener implements FTPDataTransferListener {
 
         public void started() {
@@ -70,7 +71,7 @@ public class file_transfer implements ActionListener {
 
 
 
-    public file_transfer() {
+        public file_transfer() {
         client = new FTPClient();
         while (!client.isAuthenticated()) {
 
