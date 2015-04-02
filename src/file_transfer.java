@@ -108,20 +108,26 @@ public class file_transfer implements ActionListener {
                 //Download file here.
                 //downloadFile(fileNameText.getText(), e);
                 String filepath = "";
-                String localfile = "";
                 Object[] hello = ftpTree.getSelectionPath().getPath();
+
                 for (int i = 1; i < hello.length; i++) {
-                    // if (i != 1)
                     filepath += "/" + hello[i];
-                    //else
-                    //filepath += hello[i];
-                    localfile =  hello[i].toString();
                 }
-                downloadFile(filepath,localfile,e);
-                System.out.println("Downloading file from server: " + filepath);
-                progressBar.setValue(100); //If this action completes, the progress bar's value is set.
-                //needsDownloadAnimation = true;
-                activity.setText("Download Complete");
+
+                fc.setDialogTitle("Specify a file to save");
+
+                int userSelection = fc.showSaveDialog(fc);
+
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    File fileToSave = fc.getSelectedFile();
+                    //This is where a real application would open the file.
+                    downloadFile(filepath,fileToSave,e);
+                    System.out.println("Downloading file from server: " + filepath);
+                    progressBar.setValue(100); //If this action completes, the progress bar's value is set.
+                    activity.setText("Download Complete");
+                } else {
+                    System.out.println("Open command cancelled by user.");
+                }
             }
         });
 
@@ -228,12 +234,10 @@ public class file_transfer implements ActionListener {
         }
     }
 
-    private void downloadFile(String ftpLocation, String localName, ActionEvent e)
+    private void downloadFile(String ftpLocation, File localFile, ActionEvent e)
     {
         try {
-            File downloadFile = new File(new java.io.File(".").getCanonicalPath() + '\\' + localName);
-            downloadFile.createNewFile();
-            client.download(ftpLocation, new java.io.File(localName));
+            client.download(ftpLocation, localFile, new MyTransferListener());
         } catch (IOException e1) {
             e1.printStackTrace();
         } catch (FTPIllegalReplyException e1) {
