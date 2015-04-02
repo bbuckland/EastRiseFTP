@@ -16,6 +16,9 @@ import java.util.Arrays;
  * Created by bbuckland on 3/18/15.
  */
 public class file_transfer implements ActionListener {
+    /**
+     * Our private UI elements
+     */
     private JPanel mainContainer;
     private JProgressBar progressBar;
     private JPanel activityStatus;
@@ -26,6 +29,11 @@ public class file_transfer implements ActionListener {
     private JButton ftpPermissions;
     private JTree ftpTree;
     private JButton newDirButton;
+    private JButton refreshButton;
+
+    /**
+     * our private members
+     */
     private int transferredBytes;
     static boolean stillRunning, needsDownloadAnimation;
     static String username, server, port, password;
@@ -36,8 +44,11 @@ public class file_transfer implements ActionListener {
     final JFileChooser fc = new JFileChooser();
 
 
+    /**
+     * This is our listener for all server transactions
+     */
     public class MyTransferListener implements FTPDataTransferListener {
-
+        //on init
         public void started() {
             // Transfer started
             activity.setText("Transfer Started");
@@ -45,6 +56,7 @@ public class file_transfer implements ActionListener {
             transferredBytes=0;
         }
 
+        //on transfer
         public void transferred(int length) {
             // Yet other length bytes has been transferred since the last time this
             // method was called
@@ -53,17 +65,21 @@ public class file_transfer implements ActionListener {
             activity.setText("Length:  " + length);
         }
 
+        //on complete
         public void completed() {
             // Transfer completed
             progressBar.setValue(100);
             activity.setText("Upload Complete");
+            refreshFTPTree();
         }
 
+        //on abort
         public void aborted() {
             // Transfer aborted
             activity.setText("Transfer Aborted");
         }
 
+        //on fail
         public void failed() {
             // Transfer failed
             activity.setText("Transfer Failed");
@@ -145,7 +161,6 @@ public class file_transfer implements ActionListener {
                     File file = fc.getSelectedFile();
                     //This is where a real application would open the file.
                     uploadFile(file, e);
-                    refreshFTPTree();
                     System.out.println("Opening: " + file.getName() + ".");
                 } else {
                     System.out.println("Open command cancelled by user.");
@@ -185,6 +200,7 @@ public class file_transfer implements ActionListener {
             }
         });
 
+
         newDirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -205,6 +221,15 @@ public class file_transfer implements ActionListener {
                         e1.printStackTrace();
                     }
                 }
+            }
+        });
+
+
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Refreshing Tree");
+                refreshFTPTree();
             }
         });
     }
