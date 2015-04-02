@@ -24,6 +24,7 @@ public class file_transfer implements ActionListener {
     private JButton deleteButton;
     private JButton ftpPermissions;
     private JTree ftpTree;
+    private JButton newDirButton;
     private int transferredBytes;
     static boolean stillRunning, needsDownloadAnimation;
     static String username, server, port, password;
@@ -172,6 +173,27 @@ public class file_transfer implements ActionListener {
                 super.mouseClicked(e);
                 progressBar.setValue(0);
                 activity.setText("Ready");
+            }
+        });
+
+        newDirButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String filepath = getPath();
+                String dirName = JOptionPane.showInputDialog(null,
+                        "Name of new directory:",
+                        "Enter name of directory",
+                        JOptionPane.QUESTION_MESSAGE);
+                try {
+                    client.createDirectory(filepath + "/" + dirName);
+                    refreshFTPTree();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (FTPIllegalReplyException e1) {
+                    e1.printStackTrace();
+                } catch (FTPException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
     }
