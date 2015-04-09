@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="file_transfer">
-  <grid id="27dc6" binding="mainContainer" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="mainContainer" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="644" height="1697"/>
+      <xy x="20" y="20" width="644" height="349"/>
     </constraints>
     <properties>
       <background color="-2433571"/>
@@ -14,118 +14,34 @@
       <title-color color="-16777216"/>
     </border>
     <children>
-      <grid id="242ba" binding="activityStatus" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="cb94a" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="1" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="200" height="50"/>
-            <preferred-size width="600" height="50"/>
-            <maximum-size width="1000" height="50"/>
-          </grid>
-        </constraints>
-        <properties/>
-        <border type="line">
-          <font/>
-        </border>
-        <children>
-          <component id="f2adb" class="javax.swing.JLabel" binding="activity">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="No Activity"/>
-            </properties>
-          </component>
-          <component id="c7b54" class="javax.swing.JProgressBar" binding="progressBar">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                <minimum-size width="200" height="20"/>
-                <preferred-size width="300" height="20"/>
-                <maximum-size width="580" height="20"/>
-              </grid>
-            </constraints>
-            <properties/>
-          </component>
-        </children>
-      </grid>
-      <grid id="a6a8c" layout-manager="GridLayoutManager" row-count="1" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
         <children>
-          <component id="922a2" class="javax.swing.JButton" binding="uploadButton" default-binding="true">
+          <component id="ba4eb" class="javax.swing.JButton" binding="launchProgram">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Upload"/>
+              <text value="Launch Program"/>
             </properties>
           </component>
-          <component id="d9dda" class="javax.swing.JButton" binding="downloadButton" default-binding="true">
+          <hspacer id="42049">
             <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties>
-              <text value="Download"/>
-            </properties>
-          </component>
-          <component id="d7bf1" class="javax.swing.JButton" binding="deleteButton" default-binding="true">
-            <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Delete"/>
-            </properties>
-          </component>
-          <component id="6d402" class="javax.swing.JButton" binding="ftpPermissions">
-            <constraints>
-              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Permissions"/>
-            </properties>
-          </component>
-          <component id="319d4" class="javax.swing.JButton" binding="newDirButton">
-            <constraints>
-              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="New Folder"/>
-            </properties>
-          </component>
-          <component id="8d41e" class="javax.swing.JButton" binding="refreshButton">
-            <constraints>
-              <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Refresh"/>
-            </properties>
-          </component>
+          </hspacer>
         </children>
       </grid>
-      <grid id="ccbec" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
+      <vspacer id="1dba">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="1" use-parent-layout="false">
-            <minimum-size width="-1" height="300"/>
-            <preferred-size width="-1" height="500"/>
-            <maximum-size width="-1" height="700"/>
-          </grid>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="9248f" class="javax.swing.JTree" binding="ftpTree">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-          </component>
-        </children>
-      </grid>
+      </vspacer>
     </children>
   </grid>
   <buttonGroups>
